@@ -1,0 +1,784 @@
+{% schema %}
+{
+  "name": "Bundle Engine",
+  "settings": [
+
+    {
+      "type": "paragraph",
+      "content": "Bitte speichern, um Änderungen zu sehen."
+    },
+
+    {
+      "type": "product",
+      "id": "product_1",
+      "label": "Produkt 1 (links im Bild)"
+    },
+
+    {
+      "type": "product",
+      "id": "product_2",
+      "label": "Produkt 2 (rechts im Bild)"
+    },
+
+    {
+      "type": "paragraph",
+      "content": "Die Anordnung ist wichtig, damit die Design-Dateien dem richtigen Produkt zugewiesen werden können."
+    },
+
+    {
+  "type": "header",
+  "content": "Optionsnamen überschreiben"
+    },
+
+    {
+  "type": "text",
+  "id": "product_1_option_1_label",
+  "label": "Produkt 1 – Option 1 Label (z.B. Größen)",
+  "default": "Größe"
+    },
+
+    {
+  "type": "text",
+  "id": "product_1_option_2_label",
+  "label": "Produkt 1 – Option 2 Label",
+  "default": "Größe"
+    },
+
+    {
+  "type": "text",
+  "id": "product_1_option_3_label",
+  "label": "Produkt 1 – Option 3 Label",
+  "default": "Größe"
+    },
+
+    {
+  "type": "text",
+  "id": "product_2_option_1_label",
+  "label": "Produkt 2 – Option 1 Label",
+  "default": "Größe"
+    },
+
+    {
+  "type": "text",
+  "id": "product_2_option_2_label",
+  "label": "Produkt 2 – Option 2 Label",
+  "default": "Größe"
+    },
+
+    {
+  "type": "text",
+  "id": "product_2_option_3_label",
+  "label": "Produkt 2 – Option 3 Label",
+  "default": "Größe"
+    },
+
+    {
+      "type": "header",
+      "content": "Varianten Bundle-Produkt"
+    },
+
+    {
+      "type": "checkbox",
+      "id": "show_bundle_product_variants",
+      "label": "Varianten anzeigen",
+      "default": true
+    },
+
+    {
+      "type": "select",
+      "id": "bundle_variant_display_type",
+      "label": "Anzeige der Varianten",
+      "options": [
+        { "value": "buttons", "label": "Buttons" },
+        { "value": "images", "label": "Variantenbilder" }
+      ],
+      "default": "buttons"
+    },
+
+    {
+      "type": "range",
+      "id": "variant_image_size_desktop",
+      "label": "Variantenbild Größe Desktop",
+      "min": 40,
+      "max": 140,
+      "step": 2,
+      "unit": "px",
+      "default": 80
+    },
+
+    {
+      "type": "range",
+      "id": "variant_image_size_mobile",
+      "label": "Variantenbild Größe Mobil",
+      "min": 30,
+      "max": 100,
+      "step": 2,
+      "unit": "px",
+      "default": 60
+    },
+
+    {
+      "type": "paragraph",
+      "content": "Die Farbe der Produkte wird automatisch basierend auf der Bundle-Variante synchronisiert. Optionsname und Variantenname müssen identisch sein (z. B. Farbe / Color und Schwarz / White). Funktioniert auch mit Übersetzungs-Apps."
+    },
+
+    {
+      "type": "header",
+      "content": "Preis"
+    },
+
+    {
+      "type": "checkbox",
+      "id": "redirect_to_cart",
+      "label": "Nach Hinzufügen zum Warenkorb weiterleiten",
+      "default": true
+    },
+
+    {
+      "type": "checkbox",
+      "id": "show_bundle_product_price",
+      "label": "Preis des Bundle-Produkts anzeigen",
+      "default": false
+    },
+
+    {
+      "type": "paragraph",
+      "content": "Wenn aktiviert, wird der Bundle-Produktpreis angezeigt statt des berechneten Bundle-Preises."
+    },
+
+    {
+      "type": "select",
+      "id": "discount_type",
+      "label": "Rabatt-Typ",
+      "options": [
+        { "value": "percent", "label": "Prozent" },
+        { "value": "fixed", "label": "Fixbetrag (€)" }
+      ],
+      "default": "percent"
+    },
+
+    {
+      "type": "number",
+      "id": "discount_value",
+      "label": "Rabatt-Wert",
+      "default": 0
+    },
+
+    {
+      "type": "header",
+      "content": "Abstände"
+    },
+
+    {
+      "type": "range",
+      "id": "spacing_top_desktop",
+      "label": "Abstand oben Desktop",
+      "min": 0,
+      "max": 150,
+      "step": 2,
+      "unit": "px",
+      "default": 24
+    },
+
+    {
+      "type": "range",
+      "id": "spacing_bottom_desktop",
+      "label": "Abstand unten Desktop",
+      "min": 0,
+      "max": 150,
+      "step": 2,
+      "unit": "px",
+      "default": 24
+    },
+
+    {
+      "type": "range",
+      "id": "spacing_top_mobile",
+      "label": "Abstand oben Mobil",
+      "min": 0,
+      "max": 120,
+      "step": 2,
+      "unit": "px",
+      "default": 16
+    },
+
+    {
+      "type": "range",
+      "id": "spacing_bottom_mobile",
+      "label": "Abstand unten Mobil",
+      "min": 0,
+      "max": 120,
+      "step": 2,
+      "unit": "px",
+      "default": 16
+    },
+
+    {
+      "type": "header",
+      "content": "Backend"
+    },
+
+    {
+      "type": "text",
+      "id": "backend_base_url",
+      "label": "Backend Base URL (nicht anpassen ohne Kentnisse!)",
+      "default": "https://couple-teeinblue-product-cart-image-production.up.railway.app"
+    }
+
+  ],
+  "presets": [
+    {
+      "name": "Bundle Engine"
+    }
+  ]
+}
+{% endschema %}
+
+<style>
+.bundle-wrapper {
+  margin-top: 24px;
+}
+
+.bundle-product-block {
+  margin-bottom: 28px;
+}
+
+.bundle-option-title {
+  font-weight: 600;
+  margin-bottom: 10px;
+  font-size: 15px;
+  font-family: inherit;
+}
+
+.bundle-variants {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+}
+
+.bundle-variant-btn {
+  position: relative;
+  padding: 10px 18px;
+  border: 1px solid #d9d9d9;
+  background: #fff;
+  cursor: pointer;
+  border-radius: 8px;
+  font-size: 15px;
+  font-weight: 700;
+  font-family: inherit;
+  transition: all 0.15s ease;
+  color: #000;
+}
+
+.bundle-variant-btn:hover {
+  border-color: #000;
+}
+
+.bundle-variant-btn.active {
+  border: 2px solid #000;
+}
+
+.bundle-variant-btn.active::after {
+  content: "✓";
+  position: absolute;
+  top: -8px;
+  right: -8px;
+  background: #000;
+  color: #fff;
+  width: 22px;
+  height: 22px;
+  border-radius: 50%;
+  font-size: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.bundle-wrapper {
+  margin-top: {{ section.settings.spacing_top_desktop }}px;
+  margin-bottom: {{ section.settings.spacing_bottom_desktop }}px;
+}
+
+@media(max-width:768px){
+.bundle-wrapper {
+  margin-top: {{ section.settings.spacing_top_mobile }}px;
+  margin-bottom: {{ section.settings.spacing_bottom_mobile }}px;
+}
+}
+
+.bundle-variant-image {
+  cursor:pointer;
+  border:2px solid transparent;
+  border-radius:8px;
+}
+
+.bundle-variant-image.active {
+  border-color:#000;
+}
+</style>
+
+<script>
+document.addEventListener("DOMContentLoaded", async function() {
+
+  const handles = [
+    "{{ section.settings.product_1.handle }}",
+    "{{ section.settings.product_2.handle }}"
+  ];
+
+  if (!handles[0] || !handles[1]) return;
+
+  const discountType = "{{ section.settings.discount_type }}";
+  const discountValue = parseFloat({{ section.settings.discount_value | default: 0 }});
+
+  const showBundleProductVariants = {{ section.settings.show_bundle_product_variants | json }};
+  const showBundleProductPrice = {{ section.settings.show_bundle_product_price | json }};
+  const redirectToCart = {{ section.settings.redirect_to_cart | json }};
+
+  const form = document.querySelector("form[action*='/cart/add']");
+  if (!form) return;
+
+  // Bundle-Produkt-Daten (zuverlässig für Color aus Variant-ID)
+  const BUNDLE_VARIANTS = {{ product.variants | json }};
+  const BUNDLE_OPTIONS  = {{ product.options | json }};
+
+  /* -------------------------
+     ORIGINALE VARIANTEN BLOCK AUSBLENDEN (OPTIONAL)
+  ------------------------- */
+
+  const variantBlock =
+    form.querySelector(".product-form__input") ||
+    form.querySelector("[class*='variant']") ||
+    form.querySelector("fieldset");
+
+  if (variantBlock && !showBundleProductVariants) variantBlock.style.display = "none";
+
+  const bundleWrapper = document.createElement("div");
+  bundleWrapper.className = "bundle-wrapper";
+
+  if (variantBlock) {
+    variantBlock.parentNode.insertBefore(bundleWrapper, variantBlock.nextSibling);
+  } else {
+    form.prepend(bundleWrapper);
+  }
+
+  function formatMoney(cents) {
+    return (cents / 100).toLocaleString('de-DE', {
+      style: 'currency',
+      currency: Shopify.currency.active
+    });
+  }
+
+  /* -------------------------
+     FARBE-AUTOSYNC (BUNDLE -> PRODUKTE)
+  ------------------------- */
+
+  const COLOR_OPTION_ALIASES = [
+    "farbe", "color", "colour", "couleur", "colore", "kleur", "cor",
+    "색상", "カラー", "цвет", "kolor", "culoare", "boja", "färg"
+  ];
+
+  function normalizeStr(s) {
+    return (s || "").toString().trim().toLowerCase();
+  }
+
+  function isColorOptionName(name) {
+    const n = normalizeStr(name);
+    if (!n) return false;
+    return COLOR_OPTION_ALIASES.some(alias => n === alias || n.includes(alias));
+  }
+
+  // WICHTIG: Farbe immer aus aktueller Variant-ID ableiten (Themes feuern oft kein change auf options[])
+  function getBundleSelectedColorValue() {
+
+    const variantIdInput = form.querySelector("input[name='id']");
+    if (!variantIdInput || !variantIdInput.value) return "";
+
+    const currentVariantId = parseInt(variantIdInput.value, 10);
+    if (!currentVariantId) return "";
+
+    // Color-Option-Index im Bundle finden
+    let colorIdx = -1;
+    for (let i = 0; i < BUNDLE_OPTIONS.length; i++) {
+      if (isColorOptionName(BUNDLE_OPTIONS[i])) {
+        colorIdx = i;
+        break;
+      }
+    }
+    if (colorIdx === -1) return "";
+
+    const v = BUNDLE_VARIANTS.find(x => x.id === currentVariantId);
+    if (!v) return "";
+
+    const key = "option" + (colorIdx + 1);
+    return v[key] || "";
+
+  }
+
+  /* -------------------------
+     PRODUKTE LADEN
+  ------------------------- */
+
+  let products = [];
+  for (let handle of handles) {
+    const res = await fetch(`/products/${handle}.js`);
+    const product = await res.json();
+    products.push(product);
+  }
+
+  const CUSTOM_OPTION_LABELS = {
+  0: { // Produkt 1
+    0: "{{ section.settings.product_1_option_1_label }}",
+    1: "{{ section.settings.product_1_option_2_label }}",
+    2: "{{ section.settings.product_1_option_3_label }}"
+  },
+  1: { // Produkt 2
+    0: "{{ section.settings.product_2_option_1_label }}",
+    1: "{{ section.settings.product_2_option_2_label }}",
+    2: "{{ section.settings.product_2_option_3_label }}"
+  }
+};
+
+  const selectedOptions = {};
+  
+
+  function applyBundleColorToProducts() {
+
+  const bundleColorRaw = getBundleSelectedColorValue();
+  if (!bundleColorRaw) return;
+
+  // Split an "/" falls Kombi-Farbe
+  const parts = bundleColorRaw.split("/").map(p => p.trim());
+
+  products.forEach((product, index) => {
+
+    // Ziel-Farbe bestimmen:
+    // Wenn nur 1 Wert → beide bekommen denselben
+    // Wenn 2 Werte → index 0 = erstes Produkt, index 1 = zweites Produkt
+    let targetColor =
+      parts.length > 1
+        ? parts[index] || parts[0]
+        : parts[0];
+
+    const normalizedTarget = normalizeStr(targetColor);
+
+    // Color-Option finden
+    let colorOptionIndex = -1;
+    product.options.forEach((opt, idx) => {
+      if (isColorOptionName(opt.name)) colorOptionIndex = idx;
+    });
+
+    if (colorOptionIndex === -1) return;
+
+    const key = "option" + (colorOptionIndex + 1);
+
+    // Passende Variante suchen
+    const match = product.variants.find(v =>
+      normalizeStr(v[key]) === normalizedTarget
+    );
+
+    if (match) {
+      selectedOptions[product.id][key] = match[key];
+    }
+
+  });
+
+}
+
+
+
+  products.forEach(product => {
+
+    const block = document.createElement("div");
+    block.className = "bundle-product-block";
+
+    selectedOptions[product.id] = {};
+
+    product.options.forEach((optionObj, optionIndex) => {
+
+      const optionName = optionObj.name;
+
+      const values = [...new Set(
+        product.variants.map(v => v["option" + (optionIndex + 1)])
+      )];
+
+      // VARIANTE FARBE NIE ANZEIGEN (immer automatisch / versteckt)
+      if (isColorOptionName(optionName)) {
+        selectedOptions[product.id]["option" + (optionIndex + 1)] = values[0];
+        return;
+      }
+
+      // Nur ein Wert → automatisch setzen
+      if (values.length <= 1) {
+        selectedOptions[product.id]["option" + (optionIndex + 1)] = values[0];
+        return;
+      }
+
+      const optionWrapper = document.createElement("div");
+
+     const optionTitle = document.createElement("div");
+optionTitle.className = "bundle-option-title";
+
+// Custom Label prüfen
+const customLabel =
+  CUSTOM_OPTION_LABELS[products.indexOf(product)]?.[optionIndex];
+
+optionTitle.textContent =
+  customLabel && customLabel.trim() !== ""
+    ? customLabel
+    : optionName;
+
+      const variantContainer = document.createElement("div");
+      variantContainer.className = "bundle-variants";
+
+      values.forEach((value, index) => {
+
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "bundle-variant-btn";
+        btn.textContent = value;
+
+        if (index === 0) {
+          btn.classList.add("active");
+          selectedOptions[product.id]["option" + (optionIndex + 1)] = value;
+        }
+
+        btn.addEventListener("click", function() {
+
+          variantContainer.querySelectorAll(".bundle-variant-btn")
+            .forEach(b => b.classList.remove("active"));
+
+          btn.classList.add("active");
+
+          selectedOptions[product.id]["option" + (optionIndex + 1)] = value;
+
+          calculateTotal();
+        });
+
+        variantContainer.appendChild(btn);
+
+      });
+
+      optionWrapper.appendChild(optionTitle);
+      optionWrapper.appendChild(variantContainer);
+      block.appendChild(optionWrapper);
+    });
+
+    bundleWrapper.appendChild(block);
+  });
+
+  function getSelectedVariant(product) {
+    const options = selectedOptions[product.id];
+    return product.variants.find(variant => {
+      return product.options.every((_, index) => {
+        const key = "option" + (index + 1);
+        return variant[key] === options[key];
+      });
+    });
+  }
+
+  /* -------------------------
+     PREIS BERECHNUNG (OHNE OBSERVER)
+  ------------------------- */
+
+  function updateDisplayedPrice(newPriceCents) {
+
+    const formatted = formatMoney(newPriceCents);
+
+    const selectors = [
+      "[data-product-price]",
+      ".price",
+      ".product__price",
+      ".price-item--regular",
+      ".price__regular",
+      ".product-price"
+    ];
+
+    selectors.forEach(selector => {
+      document.querySelectorAll(selector).forEach(el => {
+        el.innerHTML = formatted;
+      });
+    });
+  }
+
+  function calculateTotal() {
+
+    if (showBundleProductPrice) return;
+
+    let total = 0;
+
+    products.forEach(product => {
+      const variant = getSelectedVariant(product);
+      if (variant) total += variant.price;
+    });
+
+    if (discountValue > 0) {
+      if (discountType === "percent") {
+        total -= total * discountValue / 100;
+      } else {
+        total -= discountValue * 100;
+      }
+    }
+
+    if (total < 0) total = 0;
+
+    updateDisplayedPrice(total);
+  }
+
+  // initiale Farbsync anwenden (nachdem selectedOptions existiert)
+  applyBundleColorToProducts();
+  calculateTotal();
+
+  // Trigger: generische Form-Änderungen
+  form.addEventListener("change", function() {
+    applyBundleColorToProducts();
+    calculateTotal();
+  });
+
+  // Trigger: Variant-ID wird in vielen Themes per JS geändert -> MutationObserver ist Pflicht
+  const variantIdInput = form.querySelector("input[name='id']");
+  if (variantIdInput) {
+
+    const mo = new MutationObserver(function() {
+      applyBundleColorToProducts();
+      calculateTotal();
+    });
+
+    mo.observe(variantIdInput, { attributes: true, attributeFilter: ["value"] });
+
+    // falls ein Theme wirklich "change" feuert, nehmen wir das mit
+    variantIdInput.addEventListener("change", function() {
+      applyBundleColorToProducts();
+      calculateTotal();
+    });
+
+  }
+
+  /* -------------------------
+     PROPERTIES AUSLESEN
+  ------------------------- */
+
+  function getBundleProperties() {
+    const propertyInputs = form.querySelectorAll("input[name^='properties[']");
+    const props = {};
+
+    propertyInputs.forEach(input => {
+      const match = input.name.match(/properties\[(.*?)\]/);
+      if (match && match[1]) {
+        props[match[1]] = input.value;
+      }
+    });
+
+    return props;
+  }
+
+  /* -------------------------
+     ADD TO CART – SAUBER & DIREKT (CAPTURE PHASE)
+  ------------------------- */
+
+  let isAdding = false;
+
+  async function handleBundleSubmit(e) {
+
+    e.preventDefault();
+    e.stopPropagation();
+    e.stopImmediatePropagation();
+
+    if (isAdding) return;
+    isAdding = true;
+
+    // WICHTIG: vor dem Leeren von input[name="id"] die Farbe nochmal hart syncen
+    applyBundleColorToProducts();
+
+    const variantInput = form.querySelector("input[name='id']");
+    if (variantInput) variantInput.value = "";
+
+    const bundleProps = getBundleProperties();
+    const items = [];
+
+    const bundleId = "bundle_" + Date.now() + "_" + Math.random().toString(36).substring(2,8);
+
+    const CROPPER_BASE = "{{ section.settings.backend_base_url }}";
+    const originalCustomizationImage = bundleProps["_customization_image"] || "";
+    const encodedSrc = encodeURIComponent(originalCustomizationImage);
+
+    products.forEach((product, index) => {
+
+      const variant = getSelectedVariant(product);
+      if (!variant) return;
+
+      let properties = {};
+
+      properties["_bundle_id"] = bundleId;
+      properties["_is_bundle"] = "true";
+      properties["_bundle_handle"] = "{{ product.handle }}";
+      properties["_bundle_title"] = "{{ product.title }}";
+
+      if (originalCustomizationImage) {
+        const focus = (index === 0) ? "left" : "right";
+        properties["_customization_image"] =
+          `${CROPPER_BASE}/crop?src=${encodedSrc}&focus=${focus}`;
+      }
+
+      if (index === 0) {
+        if (bundleProps["_customization_id"]) {
+          properties["_customization_id"] = bundleProps["_customization_id"];
+        }
+        if (bundleProps["_tib_design_link_1"]) {
+          properties["_tib_design_link_1"] = bundleProps["_tib_design_link_1"];
+        }
+      }
+
+      if (index === 1) {
+        if (bundleProps["_tib_design_link_2"]) {
+          properties["_tib_design_link_2"] = bundleProps["_tib_design_link_2"];
+        }
+        if (bundleProps["_customization_id"]) {
+          properties["_customization_id"] = bundleProps["_customization_id"];
+        }
+      }
+
+      items.push({
+        id: variant.id,
+        quantity: 1,
+        properties: properties
+      });
+
+    });
+
+    if (items.length === 0) {
+      isAdding = false;
+      return;
+    }
+
+    try {
+      const resp = await fetch('/cart/add.js', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ items })
+      });
+
+      if (!resp.ok) {
+        const txt = await resp.text();
+        console.error("cart/add.js error:", resp.status, txt);
+        isAdding = false;
+        return;
+      }
+
+if (redirectToCart) {
+  window.location.replace("/cart");
+} else {
+  // Optional: Mini Feedback
+  console.log("Bundle added, no redirect.");
+  isAdding = false;
+}
+
+    } catch (error) {
+      console.error("Add to cart error:", error);
+      isAdding = false;
+    }
+  }
+
+  form.addEventListener("submit", handleBundleSubmit, true);
+
+});
+</script>

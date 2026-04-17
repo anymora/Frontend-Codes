@@ -1,0 +1,775 @@
+{% if section.settings.enable_section %}
+
+<style>
+  #tb-upsell-overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.55);
+    z-index: 9999;
+    display: none;
+  }
+  #tb-upsell-overlay.tb-upsell-visible { display: block; }
+
+  .tb-upsell-modal {
+    position: fixed; inset: 0;
+    display: flex; flex-direction: column;
+    font-family: inherit;
+  }
+  .tb-upsell-modal, .tb-upsell-modal * { box-sizing: border-box; }
+
+  .tb-upsell-close-x {
+    position: fixed;
+    right: 14px; top: 10px;
+    font-size: 28px;
+    font-weight: 900;
+    line-height: 1;
+    cursor: pointer;
+    z-index: 10000;
+    color: #000;
+  }
+
+  .tb-upsell-top {
+    flex: 1 1 auto;
+    overflow-y: auto;
+    background: #fff;
+    padding: 12px 10px 220px;
+  }
+
+  @media(min-width:1100px){
+    .tb-upsell-modal { justify-content: center; align-items: center; }
+    .tb-upsell-top {
+      width: 1200px; max-width: 92vw;
+      margin: 40px auto 0 auto;
+      padding: 30px 40px 260px;
+      border-radius: 20px;
+    }
+    .tb-upsell-grid { grid-template-columns: repeat(4, 1fr); gap: 20px; }
+    .tb-upsell-footer-inner { width: 1200px; max-width: 92vw; margin: 0 auto; }
+  }
+
+  .tb-upsell-box-success {
+    background:#f4f4f4; border-radius:14px;
+    padding:8px 10px; font-size:14px; font-weight:700;
+    margin-bottom:10px;
+  }
+  .tb-upsell-box-free {
+    display:flex; align-items:center; gap:8px;
+    background:#daf8d0; border-radius:14px;
+    padding:8px 10px; font-size:14px; font-weight:600;
+    margin-bottom:14px;
+  }
+  .tb-hidden { display:none!important; }
+
+  .tb-upsell-heading { font-size:22px; font-weight:900; margin-bottom:4px; }
+  .tb-upsell-subtext { font-size:13px; margin-bottom:14px; }
+
+  .tb-upsell-grid {
+    display:grid; gap:10px;
+    grid-template-columns:repeat(2, minmax(0, 1fr));
+    width:100%;
+  }
+  @media(min-width:900px){ .tb-upsell-grid { grid-template-columns:repeat(4, minmax(0, 1fr)); } }
+
+  .tb-upsell-card {
+    background:#fff; border-radius:14px;
+    padding:8px 8px 12px;
+    box-shadow:0 2px 8px rgba(0,0,0,0.08);
+    display:flex; flex-direction:column; width:100%;
+  }
+  .tb-upsell-title { font-size:15px; font-weight:800; margin-bottom:4px; }
+
+  .tb-upsell-image-wrap {
+    width:100%; padding-top:100%;
+    border-radius:10px; overflow:hidden;
+    background:#f5f5f5; position:relative;
+    margin-bottom:6px;
+  }
+  .tb-upsell-image-wrap img {
+    position:absolute; inset:0;
+    width:100%; height:100%; object-fit:cover;
+  }
+  .tb-upsell-image-skeleton {
+    position:absolute; inset:0;
+    background:linear-gradient(90deg,#eee,#dcdcdc,#eee);
+    background-size:200% 100%;
+    animation:tb-skeleton 1.2s linear infinite;
+  }
+  @keyframes tb-skeleton {
+    0%{background-position:200% 0;}
+    100%{background-position:-200% 0;}
+  }
+
+  .tb-upsell-price-row { display:flex; flex-direction:column; align-items:flex-start; gap:2px; margin-bottom:6px; }
+  .tb-upsell-price-line { display:flex; align-items:baseline; gap:4px; }
+  .tb-upsell-price { font-size:15px; font-weight:800; color:#000; }
+  .tb-upsell-price.tb-upsell-price--discount { color:#d32f2f; }
+  .tb-upsell-compare-price { font-size:13px; color:#999; text-decoration:line-through; }
+  .tb-upsell-tax { font-size:11px; color:#888; }
+
+  .tb-upsell-size-row { display:flex; flex-direction:column; gap:4px; margin-bottom:6px; font-size:12px; }
+  .tb-upsell-size-label { font-weight:600; }
+  .tb-upsell-size-select {
+    width:100%; border-radius:8px; border:1px solid #bfbfbf;
+    padding:5px 8px; font-size:13px; background:#fff;
+  }
+
+  .tb-upsell-add-btn {
+    width:100%; background:#ffb800; border:none;
+    padding:7px 10px; border-radius:999px;
+    font-weight:700; cursor:pointer;
+    font-size:14px; color:#000; margin-top:6px;
+  }
+
+  .tb-upsell-added-label {
+    width:100%; background:#e4f7e4; border-radius:999px;
+    text-align:center; padding:7px;
+    font-size:13px; font-weight:700; color:#138313;
+    opacity:1; transition:opacity .35s ease, filter .35s ease;
+    margin-top:6px;
+  }
+  .tb-upsell-added-label.tb-upsell-added-fadeout { opacity:0; filter:blur(3px); }
+
+  .tb-upsell-footer {
+    position:fixed; left:0; right:0; bottom:0;
+    background:#fff; border-top:3px solid #f3c12c;
+    padding:12px 12px 16px;
+  }
+  @media(min-width:900px){ .tb-upsell-footer-inner{ max-width:900px; margin:0 auto; } }
+
+  .tb-upsell-summary-row { display:flex; justify-content:space-between; align-items:center; margin-bottom:6px; font-size:14px; font-weight:700; }
+  .tb-upsell-summary-subrow { display:flex; justify-content:space-between; align-items:center; font-size:12px; margin-bottom:10px; }
+
+  .tb-upsell-footer-buttons { display:flex; gap:8px; margin-bottom:10px; }
+  .tb-upsell-cart-btn { flex:1; background:#eee; border:none; padding:9px 10px; border-radius:999px; font-size:14px; font-weight:600; color:black; cursor:pointer; }
+  .tb-upsell-checkout-btn { flex:1.2; background:#ffb800; border:none; color:black; padding:10px 12px; border-radius:999px; font-size:16px; font-weight:800; cursor:pointer; }
+
+  .tb-upsell-back-link { padding-top:10px; text-align:center; font-size:13px; }
+  .tb-upsell-back-link a { text-decoration:underline; cursor:pointer; }
+</style>
+
+<div id="tb-upsell-overlay">
+  <div class="tb-upsell-modal">
+    <div class="tb-upsell-close-x" id="tb-upsell-close-x">×</div>
+
+    <div class="tb-upsell-top">
+      <div class="tb-upsell-box-success">
+        ✅ <span class="tb-upsell-product-name">Produktname</span> erfolgreich zum Warenkorb hinzugefügt
+      </div>
+
+      <div class="tb-upsell-box-free tb-hidden" id="tb-upsell-free-box">
+        🚚 <span id="tb-upsell-free-text"></span>
+      </div>
+
+      <div class="tb-upsell-heading">Dein Design jetzt auch auf…</div>
+      <div class="tb-upsell-subtext"></div>
+
+      <div class="tb-upsell-grid" id="tb-upsell-grid">
+        <!-- Cards werden dynamisch per JS gerendert -->
+      </div>
+    </div>
+
+    <div class="tb-upsell-footer">
+      <div class="tb-upsell-footer-inner">
+        <div class="tb-upsell-summary-row">
+          <span>Zwischensumme</span>
+          <span id="tb-upsell-subtotal">0,00 €</span>
+        </div>
+        <div class="tb-upsell-summary-subrow">
+          <span id="tb-upsell-delivery-window"></span>
+          <span id="tb-upsell-shipping-amount"></span>
+        </div>
+        <div class="tb-upsell-footer-buttons">
+          <button class="tb-upsell-cart-btn" id="tb-upsell-cart-btn">Warenkorb ansehen</button>
+          <button class="tb-upsell-checkout-btn" id="tb-upsell-checkout-btn">Weiter zur Kasse</button>
+        </div>
+        <div class="tb-upsell-back-link">
+          <a id="tb-upsell-back-link">Zurück und weiter shoppen</a>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+
+  const BACKEND_BASE = "https://upsell-design-extractor-transparent-production.up.railway.app";
+  const FREE_SHIPPING_THRESHOLD = 6000;
+  const SHIPPING_UNDER = 350;
+
+  let UPSELL_CAMPAIGNS = [];
+  try {
+    const raw = {{ shop.metafields.boostomize.upsell_campaigns.value | json }};
+    UPSELL_CAMPAIGNS = Array.isArray(raw) ? raw : JSON.parse(raw);
+  } catch(e) {
+    UPSELL_CAMPAIGNS = [];
+  }
+
+  const overlay    = document.getElementById("tb-upsell-overlay");
+  const closeX     = document.getElementById("tb-upsell-close-x");
+  const freeBox    = document.getElementById("tb-upsell-free-box");
+  const freeText   = document.getElementById("tb-upsell-free-text");
+  const subtotalEl = document.getElementById("tb-upsell-subtotal");
+  const shippingEl = document.getElementById("tb-upsell-shipping-amount");
+  const deliveryEl = document.getElementById("tb-upsell-delivery-window");
+  const cartBtn    = document.getElementById("tb-upsell-cart-btn");
+  const checkoutBtn= document.getElementById("tb-upsell-checkout-btn");
+  const backLink   = document.getElementById("tb-upsell-back-link");
+  const gridEl     = document.getElementById("tb-upsell-grid");
+
+  function money(c){ return (c/100).toFixed(2).replace(".",",")+" €"; }
+  function delay(ms){ return new Promise(r=>setTimeout(r,ms)); }
+
+  async function fetchCart(){
+    const r = await fetch("/cart.js",{credentials:"same-origin"});
+    if(!r.ok) throw new Error("cart.js "+r.status);
+    return r.json();
+  }
+
+  function getBaseMockupUrl(){
+    const img = document.querySelector(".tee-printarea--image img");
+    if(img && img.src) return img.src;
+    return null;
+  }
+
+  function buildPreviewQuery(artworkUrl, baseMockupUrl, targetMockupUrl, pa){
+    var cacheKey = [
+      artworkUrl || "",
+      baseMockupUrl || "",
+      targetMockupUrl || "",
+      Number(pa.x || 0).toFixed(4),
+      Number(pa.y || 0).toFixed(4),
+      Number(pa.width || 0).toFixed(4),
+      Number(pa.height || 0).toFixed(4)
+    ].join("|");
+
+    return (
+      "?url=" + encodeURIComponent(artworkUrl) +
+      "&mockup_url=" + encodeURIComponent(baseMockupUrl) +
+      "&target_mockup_url=" + encodeURIComponent(targetMockupUrl) +
+      "&print_x=" + pa.x +
+      "&print_y=" + pa.y +
+      "&print_w=" + pa.width +
+      "&print_h=" + pa.height +
+      "&cache_key=" + encodeURIComponent(cacheKey)
+    );
+  }
+
+  function getPreviewUrlCandidates(artworkUrl, baseMockupUrl, targetMockupUrl, pa){
+    var query = buildPreviewQuery(artworkUrl, baseMockupUrl, targetMockupUrl, pa);
+    return [
+      BACKEND_BASE + "/generic-preview" + query,
+      BACKEND_BASE + "/api/generic-preview" + query
+    ];
+  }
+
+  function loadPreviewWithFallback(img, skeleton, previewState, previewCandidates, fallbackUrl, productTitle){
+    var idx = 0;
+
+    function useFallback(){
+      previewState.value = fallbackUrl;
+      img.onerror = function(){ skeleton.style.display = "none"; };
+      img.onload = function(){ skeleton.style.display = "none"; };
+      img.src = fallbackUrl;
+    }
+
+    function tryNext(){
+      if(idx >= previewCandidates.length){
+        console.warn("Kein Preview-Endpoint erreichbar für:", productTitle);
+        useFallback();
+        return;
+      }
+
+      var nextUrl = previewCandidates[idx++];
+      previewState.value = nextUrl;
+      img.onerror = function(){
+        console.warn("Preview fehlgeschlagen, teste nächsten Endpoint:", nextUrl);
+        tryNext();
+      };
+      img.onload = function(){ skeleton.style.display = "none"; };
+      img.src = nextUrl;
+    }
+
+    skeleton.style.display = "";
+    tryNext();
+  }
+
+  function computeDeliveryWindow(){
+    const t = new Date();
+    const s = new Date(t); s.setDate(t.getDate()+3);
+    const e = new Date(t); e.setDate(t.getDate()+4);
+    const M = ["Jan","Feb","Mär","Apr","Mai","Jun","Jul","Aug","Sep","Okt","Nov","Dez"];
+    const f = d => d.getDate().toString().padStart(2,"0")+"."+M[d.getMonth()];
+    return "Lieferung zwischen "+f(s)+" und "+f(e);
+  }
+
+  async function updateSummary(){
+    const cart = await fetchCart();
+    const tot = cart.total_price || 0;
+    subtotalEl.textContent = money(tot);
+    deliveryEl.textContent = computeDeliveryWindow();
+
+    if(tot >= FREE_SHIPPING_THRESHOLD){
+      shippingEl.textContent = "Kostenlos";
+      shippingEl.style.color = "#15a315";
+      shippingEl.style.fontWeight = "700";
+      freeBox.classList.add("tb-hidden");
+    } else {
+      shippingEl.textContent = money(SHIPPING_UNDER);
+      freeBox.classList.remove("tb-hidden");
+      freeText.textContent = "Noch "+money(FREE_SHIPPING_THRESHOLD - tot)+" für kostenlosen Versand";
+    }
+  }
+
+  function showAddedLabelTemporary(addBtn, addedLbl){
+    addBtn.classList.add("tb-hidden");
+    addedLbl.classList.remove("tb-hidden");
+    addedLbl.classList.remove("tb-upsell-added-fadeout");
+    setTimeout(()=>{
+      addedLbl.classList.add("tb-upsell-added-fadeout");
+      setTimeout(()=>{
+        addedLbl.classList.add("tb-hidden");
+        addedLbl.classList.remove("tb-upsell-added-fadeout");
+        addBtn.classList.remove("tb-hidden");
+      }, 400);
+    }, 2000);
+  }
+
+  async function findCampaignForProduct(handle){
+    if(!UPSELL_CAMPAIGNS.length) return null;
+
+    let productData = null;
+    try {
+      const r = await fetch("/products/" + handle + ".js");
+      if(r.ok) productData = await r.json();
+    } catch(e){}
+    if(!productData) return null;
+
+    const productId = String(productData.id);
+
+    // Priorität 1: Produkt-spezifische Kampagne
+    const productCampaign = UPSELL_CAMPAIGNS.find(function(c){
+      return c.master_type === "product" && String(c.master_product_id) === productId;
+    });
+    if(productCampaign) return productCampaign;
+
+    // Priorität 2: Kategorie-Kampagnen (Fallback)
+    const collectionCampaigns = UPSELL_CAMPAIGNS.filter(function(c){
+      return c.master_type === "collection";
+    });
+    if(collectionCampaigns.length > 0) return collectionCampaigns[0];
+
+    return null;
+  }
+
+  async function renderCards(campaign, mainItem, artworkUrl){
+    gridEl.innerHTML = "";
+
+    var baseMockupUrl = getBaseMockupUrl();
+    if(!baseMockupUrl){
+      console.error("Base Mockup URL nicht gefunden");
+      return;
+    }
+
+    console.log("BaseMockup:", baseMockupUrl);
+    console.log("Artwork:", artworkUrl);
+
+    for(var ci = 0; ci < campaign.products.length; ci++){
+      var config = campaign.products[ci];
+
+      // Produktdaten via Shopify AJAX API laden
+      var productData = null;
+      if(config.product_handle){
+        try {
+          var pr = await fetch("/products/" + config.product_handle + ".js");
+          if(pr.ok) productData = await pr.json();
+        } catch(e){}
+      }
+
+      var card = document.createElement("div");
+      card.className = "tb-upsell-card";
+
+      // ---- Titel ----
+      var title = document.createElement("div");
+      title.className = "tb-upsell-title";
+      title.textContent = config.product_title || (productData ? productData.title : "Produkt");
+      card.appendChild(title);
+
+      // ---- Bild mit Backend-Preview ----
+      var imageWrap = document.createElement("div");
+      imageWrap.className = "tb-upsell-image-wrap";
+
+      var skeleton = document.createElement("div");
+      skeleton.className = "tb-upsell-image-skeleton";
+      imageWrap.appendChild(skeleton);
+
+      var img = document.createElement("img");
+      img.alt = config.product_title || "";
+
+      // Print Area Parameter aus Kampagnen-Config (vom Metafield)
+      var pa = config.print_area || { x: 0.30, y: 0.28, width: 0.35, height: 0.40 };
+
+      var previewState = { value: artworkUrl };
+      var previewCandidates = getPreviewUrlCandidates(artworkUrl, baseMockupUrl, config.mockup_url, pa);
+
+      console.log("Preview-Kandidaten für " + config.product_title + ":", previewCandidates);
+
+      loadPreviewWithFallback(
+        img,
+        skeleton,
+        previewState,
+        previewCandidates,
+        artworkUrl,
+        config.product_title || ""
+      );
+
+      imageWrap.appendChild(img);
+      card.appendChild(imageWrap);
+
+      // ---- Preis ----
+      var priceRow = document.createElement("div");
+      priceRow.className = "tb-upsell-price-row";
+
+      var priceLine = document.createElement("div");
+      priceLine.className = "tb-upsell-price-line";
+
+      var priceEl = document.createElement("span");
+      priceEl.className = "tb-upsell-price";
+      priceEl.textContent = "–";
+
+      var compareEl = document.createElement("span");
+      compareEl.className = "tb-upsell-compare-price";
+
+      priceLine.appendChild(priceEl);
+      priceLine.appendChild(compareEl);
+      priceRow.appendChild(priceLine);
+
+      var taxEl = document.createElement("div");
+      taxEl.className = "tb-upsell-tax";
+      taxEl.textContent = "inkl. MwSt.";
+      priceRow.appendChild(taxEl);
+      card.appendChild(priceRow);
+
+      // ---- Varianten & Optionen ----
+      var variants = productData ? productData.variants : [];
+      var visibleOptions = config.visible_options || [];
+      var selectedOptions = {};
+
+      // Fallback: Größen-Optionen automatisch erkennen
+      if(visibleOptions.length === 0 && productData){
+        var sizeKw = ["größe","groesse","size","taille","maat"];
+        for(var oi = 0; oi < (productData.options || []).length; oi++){
+          var optObj = productData.options[oi];
+          for(var ki = 0; ki < sizeKw.length; ki++){
+            if(optObj.name.toLowerCase().indexOf(sizeKw[ki]) >= 0){
+              visibleOptions.push(optObj.name);
+              break;
+            }
+          }
+        }
+      }
+
+      // Optionen als Dropdowns rendern
+      for(var vi = 0; vi < visibleOptions.length; vi++){
+        if(!productData) continue;
+        var optName = visibleOptions[vi];
+
+        // Position der Option finden (option1, option2, option3)
+        var optIndex = -1;
+        for(var pi = 0; pi < productData.options.length; pi++){
+          if(productData.options[pi].name === optName){
+            optIndex = pi;
+            break;
+          }
+        }
+        if(optIndex < 0) continue;
+
+        var optKey = "option" + (optIndex + 1);
+
+        // Einzigartige Werte sammeln
+        var valuesSet = {};
+        var valuesArr = [];
+        for(var vj = 0; vj < variants.length; vj++){
+          var val = variants[vj][optKey];
+          if(val && !valuesSet[val]){
+            valuesSet[val] = true;
+            valuesArr.push(val);
+          }
+        }
+        if(valuesArr.length === 0) continue;
+
+        var sizeRow = document.createElement("div");
+        sizeRow.className = "tb-upsell-size-row";
+
+        var label = document.createElement("span");
+        label.className = "tb-upsell-size-label";
+        label.textContent = optName + " wählen";
+        sizeRow.appendChild(label);
+
+        var select = document.createElement("select");
+        select.className = "tb-upsell-size-select";
+        select.dataset.optionName = optName;
+        select.dataset.optionIndex = String(optIndex);
+
+        for(var si = 0; si < valuesArr.length; si++){
+          var option = document.createElement("option");
+          option.value = valuesArr[si];
+          option.textContent = valuesArr[si];
+          select.appendChild(option);
+        }
+
+        // Default: M wenn vorhanden, sonst Mitte
+        if(valuesArr.indexOf("M") >= 0) select.value = "M";
+        else select.value = valuesArr[Math.floor(valuesArr.length / 2)];
+
+        selectedOptions[optName] = select.value;
+        select.addEventListener("change", (function(so, on){
+          return function(e){ so[on] = e.target.value; };
+        })(selectedOptions, optName));
+
+        sizeRow.appendChild(select);
+        card.appendChild(sizeRow);
+      }
+
+      // Preis aus erster Variante laden
+      if(variants.length > 0){
+        var v0 = variants[0];
+        var pc = parseInt(v0.price, 10);
+        if(!isNaN(pc)) priceEl.textContent = money(pc);
+        if(v0.compare_at_price){
+          var cc = parseInt(v0.compare_at_price, 10);
+          if(!isNaN(cc) && cc > pc){
+            compareEl.textContent = money(cc);
+            priceEl.classList.add("tb-upsell-price--discount");
+          }
+        }
+      }
+
+      // ---- Button: Hinzufügen ----
+      var addBtn = document.createElement("button");
+      addBtn.className = "tb-upsell-add-btn";
+      addBtn.textContent = "Hinzufügen";
+      card.appendChild(addBtn);
+
+      var addedLbl = document.createElement("div");
+      addedLbl.className = "tb-upsell-added-label tb-hidden";
+      addedLbl.textContent = "Erfolgreich hinzugefügt";
+      card.appendChild(addedLbl);
+
+      // ---- Click-Handler: In den Warenkorb ----
+      addBtn.addEventListener("click", (function(cfg, pd, vars, visOpts, selOpts, btn, lbl, previewRef, mi, fallbackPreview){
+        return async function(){
+
+          // Passende Variante finden
+          var variantId = null;
+          if(pd && vars.length > 0){
+            if(visOpts.length === 0){
+              variantId = vars[0].id;
+            } else {
+              for(var vi = 0; vi < vars.length; vi++){
+                var match = true;
+                for(var oi = 0; oi < visOpts.length; oi++){
+                  var oName = visOpts[oi];
+                  var oIdx = -1;
+                  for(var pi = 0; pi < pd.options.length; pi++){
+                    if(pd.options[pi].name === oName){ oIdx = pi; break; }
+                  }
+                  if(oIdx < 0) continue;
+                  var oKey = "option" + (oIdx + 1);
+                  if(vars[vi][oKey] !== selOpts[oName]){ match = false; break; }
+                }
+                if(match){ variantId = vars[vi].id; break; }
+              }
+              if(!variantId) variantId = vars[0].id;
+            }
+          }
+
+          if(!variantId){
+            alert("Variante nicht gefunden");
+            return;
+          }
+
+          // Properties aufbauen — _customization_id vom Ursprungsprodukt erben!
+          var props = {};
+
+          // _customization_id vom Trigger-Produkt übernehmen (WICHTIG!)
+          if(mi.properties && mi.properties._customization_id){
+            props._customization_id = mi.properties._customization_id;
+          }
+
+          // _tib_design_link_1 vom Trigger-Produkt übernehmen
+          if(mi.properties && mi.properties._tib_design_link_1){
+            props._tib_design_link_1 = mi.properties._tib_design_link_1;
+          }
+
+          // Originales customization_image als Referenz
+          if(mi.properties && mi.properties._customization_image){
+            props._original_customization_image = mi.properties._customization_image;
+          }
+
+          // Neues customization_image = Preview auf diesem Mockup (vom Backend generiert)
+          props._customization_image = (previewRef && previewRef.value) ? previewRef.value : fallbackPreview;
+
+          // Upsell Tracking für Analytics
+          props._upsell_id = cfg.product_id || (pd ? String(pd.id) : "");
+          props._upsell_product_title = cfg.product_title || "";
+
+          btn.disabled = true;
+
+          try {
+            var r = await fetch("/cart/add.js", {
+              method: "POST",
+              headers: { "Content-Type": "application/json" },
+              credentials: "same-origin",
+              body: JSON.stringify({ items: [{ id: variantId, quantity: 1, properties: props }] })
+            });
+
+            if(!r.ok){
+              btn.disabled = false;
+              alert("Fehler beim Hinzufügen");
+              return;
+            }
+
+            btn.disabled = false;
+            showAddedLabelTemporary(btn, lbl);
+            await updateSummary();
+
+          } catch(e){
+            btn.disabled = false;
+            alert("Fehler");
+          }
+        };
+      })(config, productData, variants, visibleOptions, selectedOptions, addBtn, addedLbl, previewState, mainItem, artworkUrl));
+
+      gridEl.appendChild(card);
+    }
+  }
+
+  async function waitForMainItem(){
+    for(var i=0; i<20; i++){
+      var cart = await fetchCart();
+      var it = cart.items.find(function(x){
+        return x.properties &&
+          typeof x.properties._customization_image === "string" &&
+          x.properties._customization_image !== "";
+      });
+      if(it) return it;
+      await delay(300);
+    }
+    return null;
+  }
+
+
+  async function openPopup(candidateHandle){
+    await delay(600);
+
+    var mainItem = await waitForMainItem();
+    if(!mainItem) return;
+
+    var handle = candidateHandle || mainItem.handle;
+    var campaign = await findCampaignForProduct(handle);
+    if(!campaign || !campaign.products || campaign.products.length === 0) return;
+
+    document.querySelector(".tb-upsell-product-name").textContent =
+      mainItem.product_title || mainItem.title || "Produkt";
+
+    var artworkUrl = mainItem.properties._customization_image;
+
+    await renderCards(campaign, mainItem, artworkUrl);
+    await updateSummary();
+
+    overlay.classList.add("tb-upsell-visible");
+  }
+
+  function bindAddButton(){
+
+    function isCartOpen(){
+      if(window.location.pathname === "/cart") return true;
+      if(document.body.classList.contains("template-cart")) return true;
+      if(document.querySelector(".cart-drawer.is-open")) return true;
+      return false;
+    }
+
+    var lastKeys = null;
+    var running  = false;
+
+    async function checkCart(){
+      if(running) return;
+      running = true;
+
+      try {
+        var cart = await fetchCart();
+        var items = cart.items || [];
+        var keys = items.map(function(i){ return i.key; });
+
+        if(lastKeys === null){
+          lastKeys = keys;
+          running = false;
+          return;
+        }
+
+        var newItems = items.filter(function(i){ return lastKeys.indexOf(i.key) < 0; });
+        lastKeys = keys;
+
+        if(!newItems.length){ running = false; return; }
+        if(isCartOpen()){ running = false; return; }
+
+        var candidate = newItems[newItems.length - 1];
+
+        // Prüfe ob Produkt "personalisierbar" Tag hat
+        var hasTag = false;
+        try {
+          if(candidate.handle){
+            var r = await fetch("/products/" + candidate.handle + ".js");
+            if(r.ok){
+              var data = await r.json();
+              var tags = Array.isArray(data.tags)
+                ? data.tags.map(function(t){ return t.toLowerCase(); })
+                : (""+data.tags).split(",").map(function(t){ return t.trim().toLowerCase(); });
+              hasTag = tags.indexOf("personalisierbar") >= 0;
+            }
+          }
+        } catch(e){}
+
+        if(!hasTag){ running = false; return; }
+
+        openPopup(candidate.handle);
+
+      } catch(e){}
+      running = false;
+    }
+
+    setInterval(checkCart, 1200);
+  }
+
+
+  document.addEventListener("DOMContentLoaded", function(){
+    bindAddButton();
+
+    closeX.onclick = function(){ overlay.classList.remove("tb-upsell-visible"); };
+    backLink.onclick = function(){ overlay.classList.remove("tb-upsell-visible"); };
+    cartBtn.onclick = function(){ window.location.href = "/cart"; };
+    checkoutBtn.onclick = function(){ window.location.href = "/checkout"; };
+  });
+
+})();
+</script>
+
+{% endif %}
+
+{% schema %}
+{
+  "name": "Upsell Popup Pro",
+  "settings": [
+    {
+      "type": "checkbox",
+      "id": "enable_section",
+      "label": "Upsell Popup aktivieren",
+      "default": true
+    }
+  ],
+  "presets": [
+    { "name": "UpsellPro Popup" }
+  ]
+}
+{% endschema %}
